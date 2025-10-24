@@ -94,5 +94,53 @@
             Grid[tail.Row, tail.Col] = GridValue.Empty;
             snakePositions.RemoveLast();
         }
+
+        public void ChangeDirection(Direction dir)
+        {
+            Dir = dir;
+        }
+
+        // check if snake hits a wall
+        private bool OutsideGrid(Position pos)
+        {
+            return pos.Row < 0 || pos.Row >= Rows || pos.Col < 0 || pos.Col >= Cols;
+        }
+
+        private GridValue WillHit(Position newHeadPos)
+        {
+            if (OutsideGrid(newHeadPos))
+            {
+                return GridValue.Outside;
+            }
+
+            if (newHeadPos == TailPosition())
+            {
+                return GridValue.Empty;
+            }
+
+            return Grid[newHeadPos.Row, newHeadPos.Col];
+        }
+
+        public void Move()
+        {
+            TailPosition newHeadPos = HeadPosition().Translate(Dir);
+            GridValue hit = WillHit(newHeadPos);
+
+            if (hit == GridValue.Outside || hit == GridValue.Snake)
+            {
+                GameOver = true;
+            }
+            else if (hit == GridValue.Empty)
+            {
+                RemoveTail();
+                AddHead(newHeadPos);
+            }
+            else if (hit == GridValue.Food)
+            {
+                AddHead(newHeadPos);
+                Score++;
+                AddFood();
+            }
+        }
     }
 }

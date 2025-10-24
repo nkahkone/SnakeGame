@@ -32,5 +32,21 @@
                 snakePositions.AddFirst(new Position(r, c));
             }
         }
+
+        // looping through all rows and columns
+        private IEnumerable<Position> EmptyPositions()
+        {
+            for (int r = 0; r < Rows; r++)
+            {
+                for (int c = 0; c < Cols; c++)
+                {
+                    // if grid is empty @ r,c , return the position
+                    if (Grid[r, c] == GridValue.Empty)
+                    {
+                        yield return new Position(r, c);
+                    }
+                }
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@
             Dir = Direction.Right;
 
             AddSnake();
+            AddApple();
         }
 
         private void AddSnake()
@@ -47,6 +48,22 @@
                     }
                 }
             }
+        }
+
+        private void AddApple()
+        {
+            // creating a list of empty positions on map
+            List<Position> empty = new List<Position>(EmptyPositions());
+
+            // if someone manages to beat the game and there are no empty positions left
+            if (empty.Count == 0)
+            {
+                return;
+            }
+
+            // picking a random empty position and adding an apple
+            Position pos = empty[random.Next(empty.Count)];
+            Grid[pos.Row, pos.Col] = GridValue.
         }
     }
 }

@@ -63,7 +63,7 @@
 
             // picking a random empty position and adding an apple
             Position pos = empty[random.Next(empty.Count)];
-            Grid[pos.Row, pos.Col] = GridValue.
+            Grid[pos.Row, pos.Col] = GridValue.Food;
         }
 
         // detecting when the snake hits something
@@ -123,7 +123,7 @@
 
         public void Move()
         {
-            TailPosition newHeadPos = HeadPosition().Translate(Dir);
+            Position newHeadPos = HeadPosition().Translate(Dir);
             GridValue hit = WillHit(newHeadPos);
 
             if (hit == GridValue.Outside || hit == GridValue.Snake)
@@ -139,7 +139,7 @@
             {
                 AddHead(newHeadPos);
                 Score++;
-                AddFood();
+                AddApple();
             }
         }
     }

@@ -34,6 +34,49 @@ namespace Snake
             gameState = new GameState(rows, cols);
         }
 
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Draw();
+            await GameLoop();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (gameState.GameOver)
+            {
+                return;
+            }
+
+            switch (e.Key)
+            {
+                case Key.Left:
+                    gameState.ChangeDirection(Direction.Left); break;
+                case Key.Right:
+                    gameState.ChangeDirection(Direction.Right); break;
+                case Key.Up:
+                    gameState.ChangeDirection(Direction.Up); break;
+                case Key.Down:
+                    gameState.ChangeDirection(Direction.Down); break;
+                case Key.A:
+                    gameState.ChangeDirection(Direction.Left); break;
+                case Key.D:
+                    gameState.ChangeDirection(Direction.Right); break;
+                case Key.W:
+                    gameState.ChangeDirection(Direction.Up); break;
+                case Key.S:
+                    gameState.ChangeDirection(Direction.Down); break;
+            }
+        }
+
+        private async Task GameLoop()
+        {
+            while (!gameState.GameOver) 
+            {
+                await Task.Delay(100);
+                gameState.Move();
+                Draw();
+            }
+        }
         private Image[,] SetupGrid()
         {
             Image[,] images = new Image[rows, cols];

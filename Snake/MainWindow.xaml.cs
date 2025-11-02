@@ -1,13 +1,9 @@
-﻿using System.Text;
+﻿
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace Snake
 {
@@ -36,11 +32,33 @@ namespace Snake
         private GameState gameState;
         private bool gameRunning;
 
+        private AudioManager audio;
+
         public MainWindow()
         {
             InitializeComponent();
             gridImages = SetupGrid();
             gameState = new GameState(rows, cols);
+
+            audio = new AudioManager("snakegamesoundtrackloop.wav", "apple_crunch.wav", "game_over.wav");
+
+            // subscribe to events
+            gameState.AppleEaten += OnAppleEaten;
+            gameState.GameOverEvent += OnGameOverSound;
+        }
+
+        private void OnAppleEaten()
+        {
+            Dispatcher.Invoke(() => audio.PlayApple());
+        }
+
+        private void OnGameOverSound()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                audio.PlayGameOver();
+                audio.StopMusic();
+            });
         }
 
         private async Task RunGame()
@@ -48,9 +66,12 @@ namespace Snake
             Draw();
             await ShowCountDown();
             Overlay.Visibility = Visibility.Hidden;
+            audio.PlayMusic();
             await GameLoop();
             await ShowGameOver();
             gameState = new GameState(rows, cols);
+            gameState.AppleEaten += OnAppleEaten;
+            gameState.GameOverEvent += OnGameOverSound;
         }
 
         private async void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -106,6 +127,13 @@ namespace Snake
                 gameState.Move();
                 Draw();
             }
+        }
+
+        // dispose audio when window closes
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            audio.Dispose();
         }
         private Image[,] SetupGrid()
         {

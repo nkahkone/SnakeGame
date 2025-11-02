@@ -13,6 +13,9 @@
         private readonly LinkedList<Position> snakePositions = new LinkedList<Position>();
         private readonly Random random = new Random();
 
+        public event Action? AppleEaten;
+        public event Action? GameOverEvent;
+
         public GameState(int rows, int cols) 
         {
             Rows = rows;
@@ -161,6 +164,7 @@
             if (hit == GridValue.Outside || hit == GridValue.Snake)
             {
                 GameOver = true;
+                GameOverEvent?.Invoke();
             }
             else if (hit == GridValue.Empty)
             {
@@ -171,6 +175,7 @@
             {
                 AddHead(newHeadPos);
                 Score++;
+                AppleEaten?.Invoke();
                 AddApple();
             }
         }

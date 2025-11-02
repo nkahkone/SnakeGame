@@ -40,7 +40,7 @@ namespace Snake
             gridImages = SetupGrid();
             gameState = new GameState(rows, cols);
 
-            audio = new AudioManager("snakegamesoundtrackloop.wav", "apple_crunch.wav", "game_over.wav");
+            audio = new AudioManager("Assets/snakegamesoundtrackloop.wav", "Assets/apple_crunch.wav", "Assets/game_over.wav");
 
             // subscribe to events
             gameState.AppleEaten += OnAppleEaten;

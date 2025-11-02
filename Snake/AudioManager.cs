@@ -1,69 +1,68 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.IO;
+using System.Windows.Media;
 
-
-public class AudioManager : IDisposable
+namespace Snake
 {
-    private readonly MediaPlayer musicPlayer = new MediaPlayer();
-    private readonly MediaPlayer sfxPlayer = new MediaPlayer(); // single SFX player; you can expand to pool if overlapping SFX needed
-
-    // call with relative URIs to copied output files or pack URIs depending on how you include files
-    public AudioManager(string musicPath, string appleSfxPath, string gameOverSfxPath)
+    public class AudioManager : IDisposable
     {
-        MusicPath = musicPath;
-        AppleSfxPath = appleSfxPath;
-        GameOverSfxPath = gameOverSfxPath;
+        private readonly MediaPlayer musicPlayer = new MediaPlayer();
 
-        // loop the music
-        musicPlayer.MediaEnded += (s, e) =>
+        // Helper: resolves path relative to the executable + Assets folder
+        private static string ResolvePath(string file)
         {
-            musicPlayer.Position = TimeSpan.Zero;
-            musicPlayer.Play();
-        };
-    }
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", file);
+        }
 
-    public string MusicPath { get; }
-    public string AppleSfxPath { get; }
-    public string GameOverSfxPath { get; }
-
-    public void PlayMusic()
-    {
-        try
+        // Constructor: pass only the filenames, not full paths
+        public AudioManager(string musicFile, string appleSfxFile, string gameOverSfxFile)
         {
-            musicPlayer.Open(new Uri(MusicPath, UriKind.Relative));
-            musicPlayer.Volume = 0.5; // adjust
+            MusicPath = ResolvePath(musicFile);
+            AppleSfxPath = ResolvePath(appleSfxFile);
+            GameOverSfxPath = ResolvePath(gameOverSfxFile);
+
+            // Loop the background music
+            musicPlayer.MediaEnded += (s, e) =>
+            {
+                musicPlayer.Position = TimeSpan.Zero;
+                musicPlayer.Play();
+            };
+        }
+
+        public string MusicPath { get; }
+        public string AppleSfxPath { get; }
+        public string GameOverSfxPath { get; }
+
+        // Play looping background music
+        public void PlayMusic()
+        {
+            if (!File.Exists(MusicPath)) return; // optional safety check
+            musicPlayer.Open(new Uri(MusicPath, UriKind.Absolute));
+            musicPlayer.Volume = 0.5;
             musicPlayer.Play();
         }
-        catch { /* handle/log errors as desired */ }
-    }
 
-    public void StopMusic()
-    {
-        musicPlayer.Stop();
-    }
-
-    // Play a quick sound effect (non-blocking)
-    private void PlaySfx(string path)
-    {
-        try
+        public void StopMusic()
         {
-            // reuse sfxPlayer; for overlapping sfx consider creating new MediaPlayer for each play
+            musicPlayer.Stop();
+        }
+
+        // Play a one-shot sound effect
+        private void PlaySfx(string path)
+        {
+            if (!File.Exists(path)) return; // optional safety check
             var player = new MediaPlayer();
-            player.Open(new Uri(path, UriKind.Relative));
-            player.MediaEnded += (s, e) =>
-            {
-                player.Close();
-            };
+            player.Open(new Uri(path, UriKind.Absolute));
+            player.MediaEnded += (s, e) => player.Close();
             player.Play();
         }
-        catch { /* handle/log errors */ }
-    }
 
-    public void PlayApple() => PlaySfx(AppleSfxPath);
-    public void PlayGameOver() => PlaySfx(GameOverSfxPath);
+        public void PlayApple() => PlaySfx(AppleSfxPath);
+        public void PlayGameOver() => PlaySfx(GameOverSfxPath);
 
-    public void Dispose()
-    {
-        musicPlayer.Close();
-        sfxPlayer.Close();
+        public void Dispose()
+        {
+            musicPlayer.Close();
+        }
     }
 }

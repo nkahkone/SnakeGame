@@ -6,6 +6,7 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,7 @@
     <Content Include="Assets\game_over.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\icon.ico" />
     <Content Include="Assets\snakegamesoundtrackloop.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
